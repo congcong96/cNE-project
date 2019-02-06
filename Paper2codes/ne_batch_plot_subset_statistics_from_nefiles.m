@@ -1,40 +1,28 @@
-function ne_batch_plot_subset_statistics_from_sig_sta(sig_sta, varargin)
+function ne_batch_plot_subset_statistics_from_nefiles(nefiles, varargin)
 %UNTITLED4 Summary of this function goes here
 %   Detailed explanation goes here
 
 ip = inputParser;
-addRequired(ip, 'sig_sta', @isstruct);
+addRequired(ip, 'nefiles', @iscell);
 addParameter(ip, 'neuronsig', -1, @(x) x == 0 || x == 1 || x == -1);
 addParameter(ip, 'NEsig', -1, @(x) x == 0 || x == 1 || x == -1);
 addParameter(ip, 'paramopt', 0, @(x) x == 0 || x == 1)
-parse(ip, sig_sta, varargin{:});
+parse(ip, nefiles, varargin{:});
 
-sig_sta = ip.Results.sig_sta;
+nefiles = ip.Results.nefiles;
 neuronsig = ip.Results.neuronsig;
 NEsig = ip.Results.NEsig;
 paramopt = ip.Results.paramopt;
 
+
 fn_suffix = {'ptd','moransI','reliability_idx','info_extrap'};
 fn_prefix = {'all','w_NE','wo_NE'};
 
-statstruct(length(sig_sta)).temp = [];
+statstruct(length(nefiles)).temp = [];
 
-prevfile = '';
-
-for i = 1:length(sig_sta)
-    
-    if ~strcmp(sig_sta(i).filename, prevfile)
-        load(sig_sta(i).filename, 'exp_site_nedata', 'subsetstats')
-    end
-    
-    prevfile = sig_sta(i).filename;
-    
-    neurons = sig_sta(i).neurons;
-    NE = sig_sta(i).NE;
-    
-    subsetneurons = [subsetstats.neuron];
-    subsetNEs = [subsetstats.NE];
-    ssidx = subsetNEs == NE & logical(sum(cell2mat(arrayfun(@(x) x == subsetneurons, neurons, 'UniformOutput', 0)), 1));
+for i = 1:length(nefiles)    
+        
+    load(nefiles{i}, 'exp_site_nedata', 'subsetstats')
     
     sig_neuron = exp_site_nedata.nedata.sig_neuron_sta;
     sig_NE = exp_site_nedata.nedata.sig_NE_sta;
@@ -55,10 +43,11 @@ for i = 1:length(sig_sta)
     try
         neuron_num = [subsetstats.neuron]';
         NE_num = [subsetstats.NE]';          
-        idx = ssidx' & sig_neuron(neuron_num) == neuronidx & sig_NE(NE_num) == NEidx;
+        idx = sig_neuron(neuron_num) == neuronidx & sig_NE(NE_num) == NEidx;
     catch % for penetrations where none of the neurons pass spikecount threshold
         continue
     end
+  
     
     if sum(idx) > 0
         
@@ -86,7 +75,7 @@ for i = 1:length(fn)/3
     tempwith = cell2mat({statstruct.(fn{(i-1)*grps+2})});
     tempwithout = cell2mat({statstruct.(fn{(i-1)*grps+3})});
 
-    subplot(3,4,i)
+    subplot(4,3,i*3-2)
     scatter(tempall, tempwith, 6, 'filled');    
     if contains(fn{(i-1)*grps+1}, 'info') %|| contains(fn{(i-1)*grps+1}, 'ptd')
         set(gca, 'xscale','log','yscale','log')
@@ -104,7 +93,7 @@ for i = 1:length(fn)/3
     end
     print_n_and_p(1/2, 1/8, length(tempall), pval)
 
-    subplot(3,4,i+4)
+    subplot(4,3,i*3-1)
     scatter(tempwithout, tempwith, 6, 'filled');
     if contains(fn{(i-1)*grps+1}, 'info') %|| contains(fn{(i-1)*grps+1}, 'ptd')
         set(gca, 'xscale','log','yscale','log')
@@ -122,7 +111,7 @@ for i = 1:length(fn)/3
     end
     print_n_and_p(1/2, 1/8, length(tempwithout), pval)
 
-    subplot(3,4,i+8)
+    subplot(4,3,i*3)
     scatter(tempwithout, tempall, 6, 'filled');
     if contains(fn{(i-1)*grps+1}, 'info') %|| contains(fn{(i-1)*grps+1}, 'ptd')
         set(gca, 'xscale','log','yscale','log')
