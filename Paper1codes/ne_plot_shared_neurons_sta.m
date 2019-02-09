@@ -1,4 +1,4 @@
-function data = ne_plot_shared_neurons_sta(exp_site_nedata, varargin)
+function [data, varargout] = ne_plot_shared_neurons_sta(exp_site_nedata, varargin)
 
 %spkthresh: number of spikes the smallest subgroup must have to be
 %considered.
@@ -209,6 +209,8 @@ if stasigopt == 1
 else %if stasigopt == 0
     stacell = mat2cell(stamat, cellidx, size(stamat, 2));
 end
+
+varargout{1} = stacell;
 
 if plotopt
     

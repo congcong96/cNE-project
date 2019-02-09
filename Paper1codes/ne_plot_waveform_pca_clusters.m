@@ -1,4 +1,4 @@
-function [sil, proj, catmat] = ne_plot_waveform_pca_clusters(exp_site_nedata, spk, edges, rawfolder, varargin)
+function [proj, wavemat, catmat] = ne_plot_waveform_pca_clusters(exp_site_nedata, spk, edges, rawfolder, varargin)
 
 ip = inputParser;
 addRequired(ip, 'exp_site_nedata', @isstruct);
@@ -22,9 +22,10 @@ switch groupopt
     case 'i/a' %cNE-i vs cNE-a
         
         spksubset = ne_get_ensemble_spktrain_subset(exp_site_nedata);
-        sil = cell(length(spksubset), 1);
+%         sil = cell(length(spksubset), 1);
         catmat = cell(length(spksubset), 1);
         proj = cell(length(spksubset), 1);
+        wavemat = cell(length(spksubset), 1);
         if plotopt
             f = 0;    
             figure('Position', [349 86 1104 898]);
@@ -45,16 +46,16 @@ switch groupopt
             w_wavemat = plot_neuron_waveform(spk, rawfolder, n, 'plotopt', 'none', 'xbounds', xbounds, 'subsetspk', w_spktime);
             wo_wavemat = plot_neuron_waveform(spk, rawfolder, n, 'plotopt', 'none', 'xbounds', xbounds, 'subsetspk', wo_spktime);
 
-            wavemat = [wo_wavemat; w_wavemat];
+            wavemat{i} = [wo_wavemat; w_wavemat];
             catmat{i} = [zeros(length(wo_spktime), 1); ones(length(w_spktime), 1)];
 
-            autocorr = corr(wavemat);
+            autocorr = corr(wavemat{i});
 
             [E,~] = eig(autocorr);
 
             PCs = E(:,1:2);
-            proj{i} = wavemat*PCs;  
-            sil{i} = silhouette(proj{i}, catmat{i});
+            proj{i} = wavemat{i}*PCs;  
+%             sil{i} = silhouette(proj{i}, catmat{i});
 
             
                         
@@ -90,9 +91,10 @@ switch groupopt
     case 'shared'
         data = ne_plot_shared_neurons_sta(exp_site_nedata, 'stasimopt', 1, 'neuopt', neuopt);
         if isempty(data)
-            sil = [];
+%             sil = [];
             proj = [];
             catmat = [];
+            wavemat = [];
             return
         end
         spkcell = {data.NEexclusive};
@@ -104,9 +106,10 @@ switch groupopt
         end
 
         
-        sil = cell(length(spkcell), 1);
+%         sil = cell(length(spkcell), 1);
         catmat = cell(length(spkcell), 1);
         proj = cell(length(spkcell), 1);
+        wavemat = cell(length(spkcell), 1);
 
         for i = 1:length(spkcell)
             fprintf('\nProcessing neuron %d of %d',i,length(spkcell))        
@@ -114,7 +117,7 @@ switch groupopt
             
             spktime = cell(s, 1);
             idx = 1;
-            wavemat = zeros(sum(spkcount{i}), length(xbounds));
+            wavemat{i} = zeros(sum(spkcount{i}), length(xbounds));
 
             
             for ii = 1:s
@@ -124,7 +127,7 @@ switch groupopt
                 
                 numspikes = spkcount{i}(ii);
 
-                wavemat(idx:idx+numspikes-1,:) = plot_neuron_waveform(spk, rawfolder, n(i), 'plotopt', 'none', 'xbounds', xbounds, 'subsetspk', spktime{ii});
+                wavemat{i}(idx:idx+numspikes-1,:) = plot_neuron_waveform(spk, rawfolder, n(i), 'plotopt', 'none', 'xbounds', xbounds, 'subsetspk', spktime{ii});
                 catmat{i}(idx:idx+numspikes-1) = ii*ones(length(spktime{ii}),1);
                 
                 idx = idx+numspikes;
@@ -132,13 +135,13 @@ switch groupopt
             end
 
 
-            autocorr = corr(wavemat);
+            autocorr = corr(wavemat{i});
 
             [E,~] = eig(autocorr);
 
             PCs = E(:,1:2);
-            proj{i} = wavemat*PCs;
-            sil{i} = silhouette(proj{i}, catmat{i});
+            proj{i} = wavemat{i}*PCs;
+%             sil{i} = silhouette(proj{i}, catmat{i});
 
             
             if plotopt

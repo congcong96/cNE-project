@@ -46,14 +46,18 @@ for i = 1:length(rcorrcell)
     
 end
 
-figure;
+color = fifteen_color_blind_palette('lightblue');
+
+figure; hold on
 edges = 0:0.05:1;
-histogram(percent,edges, 'Normalization', 'probability');
+histogram(percent,edges, 'Normalization', 'probability', 'FaceColor', color);
 % histogram(percent,edges);
 tickpref;
 text(0.5,0.3, sprintf('n = %d', length(rcorrcell)));
 xlabel('Uniqueness index')
 ylabel('Ratio')
+line([0 1], [0.05 0.05], 'Color', 'k', 'LineStyle', '--');
+xlim([0 1])
 
 
 figure;
