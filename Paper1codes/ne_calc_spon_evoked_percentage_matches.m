@@ -13,12 +13,13 @@ sigspon = cell(length(corrvalstruct),1);
 
 for i = 1:length(corrvalstruct)
     
-    filepath = fullfile(folder, corrvalstruct(i).file);
-    load(filepath,'exp_site_nedata')
+    sponfilepath = fullfile(folder, corrvalstruct(i).sponfile);
+    load(sponfilepath,'exp_site_nedata')
+    sponIC = exp_site_nedata.nedata.Patterns;
     
-    nedata = exp_site_nedata.nedata;
-    sponIC = nedata.spon_patterns;
-    evokedIC = nedata.evoked_patterns;
+    evokedfilepath = fullfile(folder, corrvalstruct(i).evokedfile);
+    load(evokedfilepath,'exp_site_nedata')
+    evokedIC = exp_site_nedata.nedata.Patterns;
     
     corrmat = abs(corr(sponIC,evokedIC));
     

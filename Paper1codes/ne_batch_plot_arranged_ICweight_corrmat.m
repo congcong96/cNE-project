@@ -43,6 +43,16 @@ for i = 1:length(sponfiles)
             for j = 1:length(xidx)
                 rectangle('Position', [xidx(j) yidx(j) 1 1], 'EdgeColor', color, 'LineWidth', 2)
             end
+            
+        case 'max_row'
+            
+            [~, maxidx{i}] = max(corrmat{i}, [], 2);
+            xidx = maxidx{i} - 0.5;
+            yidx = 0.5:size(corrmat{i}, 2) - 0.5;
+            
+            for j = 1:length(xidx)
+                rectangle('Position', [xidx(j) yidx(j) 1 1], 'EdgeColor', color, 'LineWidth', 2)
+            end
                                     
         case 'none'
             continue

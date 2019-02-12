@@ -1,9 +1,23 @@
-Paper1codes/ca*.mat
+# Ignore old analysis codes with 'ca' prefix
+Paper1codes/ca*.m
+
+# Ignore codes for Paper 2
 Paper2codes/
+
+# Ignore codes for Paper 3
 Paper3codes/
+
+# Ignore Craig folder
 Craig/
+
+# Ignore RFanalyses folder
 RFanalyses/
-*.m
+
+# Ignore all .m files in parent folder
+/*.m
+
+# Ignore all .asv and .fig files
+*.asv
+*.fig
+
 tutorial.pdf
-**/**.asv
-**/**.fig
