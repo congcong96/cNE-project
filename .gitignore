@@ -1,5 +1,9 @@
-Paper1codes/ca_*.mat
-
-Paper3codes/
-
+Paper1codes/ca*.mat
 Paper2codes/
+Paper3codes/
+Craig/
+RFanalyses/
+*.m
+tutorial.pdf
+**/**.asv
+**/**.fig
